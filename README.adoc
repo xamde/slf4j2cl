@@ -192,10 +192,15 @@ public class Console {
 }
 ----
 
-.Console_wrapped (NEW)
+.Console_script & Console_wrapped (NEW)
 [source,java]
 ----
-public class Console_wrapped extends elemental2.dom.Console {
+public class Console_script {
+    public void debug(Object... var_data) {
+        DomGlobals.console.debug(var_data);
+    }
+}
+public class Console_wrapped extends Console_script {
     @Override
     @GwtIncompatible
     public void debug(Object... var_data) {
@@ -207,8 +212,15 @@ public class Console_wrapped extends elemental2.dom.Console {
 .What J2CL sees
 [source,java]
 ----
-public class Console_wrapped extends elemental2.dom.Console {
+public class Console_script {
+    public void debug(Object... var_data) {
+        DomGlobals.console.debug(var_data);
+    }
+}
+public class Console_wrapped extends Console_script {
 }
 ----
+
+This is actually delegating twice. Quite cumbersome.
 
 Caveat: Your code needs to use `Console_wrapped` instead of `Console`.

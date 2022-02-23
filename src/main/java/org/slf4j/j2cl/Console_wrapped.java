@@ -1,6 +1,8 @@
 package org.slf4j.j2cl;
 
 import elemental2.dom.Console;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
 import java.util.Arrays;
 
@@ -8,7 +10,7 @@ import java.util.Arrays;
  * Back-wrap the elemental2.dom.Console so that it runs also on the JRE side. This simplifies testing.
  * Only the bare minimum for testing Console in log context is wrapped.
  */
-public class Console_wrapped extends Console {
+public class Console_wrapped extends Console_script {
 
     @Override
     @GwtIncompatible
