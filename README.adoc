@@ -26,9 +26,10 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 ** Issue: CopyOnWriteArrayList cannot be resolved to a type
 *** Idea: Use a simple `ArrayList` in script-mode
 
-. `org.slf4j.helpers.BasicMDCAdapter.java`:
-** InheritableThreadLocal cannot be resolved to a type
-** The method childValue(Map<String,String>) of type new InheritableThreadLocal<Map<String,String>>(){} must override or implement a supertype method
+. ❌ `org.slf4j.helpers.BasicMDCAdapter.java`:
+** Issue: InheritableThreadLocal cannot be resolved to a type
+*** Comment: Although the JRE emulation includes a `java.lang.ThreadLocal`, there is no `InheritableThreadLocal`.
+*** Idea: GwtIncompatible the whole class.
 
 . `org.slf4j.helpers.MessageFormatter.java`:
 ** The import java.text.MessageFormat cannot be resolved

@@ -24,6 +24,7 @@
  */
 package org.slf4j.helpers;
 
+import org.slf4j.j2cl.GwtIncompatible;
 import org.slf4j.spi.MDCAdapter;
 
 import java.util.*;
@@ -42,6 +43,7 @@ import java.util.Map;
  * 
  * @since 1.5.0
  */
+@GwtIncompatible
 public class BasicMDCAdapter implements MDCAdapter {
 
     private InheritableThreadLocal<Map<String, String>> inheritableThreadLocal = new InheritableThreadLocal<Map<String, String>>() {
