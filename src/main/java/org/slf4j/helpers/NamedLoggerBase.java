@@ -24,11 +24,11 @@
  */
 package org.slf4j.helpers;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.j2cl.GwtIncompatible;
 
 /**
  * Serves as base class for named logger implementation. More significantly, this
@@ -60,9 +60,10 @@ abstract class NamedLoggerBase implements Logger, Serializable {
      * this approach would be mostly counterproductive.
      * 
      * @return logger with same name as returned by LoggerFactory
-     * @throws ObjectStreamException
+     * @throws java.io.ObjectStreamException
      */
-    protected Object readResolve() throws ObjectStreamException {
+    @GwtIncompatible
+    protected Object readResolve() throws java.io.ObjectStreamException {
         // using getName() instead of this.name works even for
         // NOPLogger
         return LoggerFactory.getLogger(getName());

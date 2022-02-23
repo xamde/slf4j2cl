@@ -37,9 +37,10 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 ** The import java.text.MessageFormat cannot be resolved
 *** Idea: Was just imported for the JavaDocs. Added full package name to JavaDoc.
 
-. `org.slf4j.helpers.NamedLoggerBase.java`:
-** ObjectStreamException cannot be resolved to a type
+. {error} `org.slf4j.helpers.NamedLoggerBase.java`:
 ** The import java.io.ObjectStreamException cannot be resolved
+*** Comment: Not part of JRE emulation. Used in readResolve() method, which is used when objects -- here the logger instances -- are deserialized. This feature is not required in script-mode.
+*** Idea: GwtIncompatible the method
 
 . `org.slf4j.helpers.SubstituteLogger.java`:
 ** IllegalAccessException cannot be resolved to a type
