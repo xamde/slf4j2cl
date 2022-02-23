@@ -39,30 +39,6 @@
 
         <plugins>
             <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <header>LICENSE</header>
-                    <excludes>
-                        <exclude>src/main/resources/**</exclude>
-                        <exclude>**/README.adoc</exclude>
-                        <exclude>**/CHANGELOG</exclude>
-                        <exclude>target/**</exclude>
-                        <exclude>LICENSE**</exclude>
-                        <exclude>build/**</exclude>
-                        <exclude>.github/**</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2.1</version>
