@@ -13,14 +13,18 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 
 
 === Issues and Solutions
+.Legend
+✔️ ️ = Feature can be used in script mode +
+❌ = Feature not available in script mode
 
-. `org.slf4j.event.EventRecodingLogger.java`:
+.Issues
+. ✔️ `org.slf4j.event.EventRecodingLogger.java`:
 ** Issue: Thread cannot be resolved
 *** Idea: In script-mode, the thread name is now always `n/a`.
 
-. `org.slf4j.helpers.BasicMarker.java`:
-** CopyOnWriteArrayList cannot be resolved to a type
-** The import java.util.concurrent.CopyOnWriteArrayList cannot be resolved
+. ✔️ `org.slf4j.helpers.BasicMarker.java`:
+** Issue: CopyOnWriteArrayList cannot be resolved to a type
+*** Idea: Use a simple `ArrayList` in script-mode
 
 . `org.slf4j.helpers.BasicMDCAdapter.java`:
 ** InheritableThreadLocal cannot be resolved to a type

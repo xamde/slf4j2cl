@@ -24,11 +24,11 @@
  */
 package org.slf4j.helpers;
 
+import org.slf4j.Marker;
+import org.slf4j.j2cl.Platform;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.slf4j.Marker;
 
 /**
  * A simple implementation of the {@link Marker} interface.
@@ -40,7 +40,7 @@ public class BasicMarker implements Marker {
 
     private static final long serialVersionUID = -2849567615646933777L;
     private final String name;
-    private List<Marker> referenceList = new CopyOnWriteArrayList<Marker>();
+    private List<Marker> referenceList = Platform.get().createThreadSafeArrayList();
 
     BasicMarker(String name) {
         if (name == null) {
