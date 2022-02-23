@@ -1,4 +1,6 @@
 = slf4j2cl
+:check: ✔️
+:error: ❌
 
 **s**imple **l**ogging **f**acade **f**or **j**ava **t**o **c**losure **c**ompiler
 
@@ -14,25 +16,26 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 
 === Issues and Solutions
 .Legend
-✔️ ️ = Feature can be used in script mode +
-❌ = Feature not available in script mode
+{check}️ = Feature can be used in script mode +
+{error} = Feature not available in script mode
 
 .Issues
-. ✔️ `org.slf4j.event.EventRecodingLogger.java`:
+. {check} `org.slf4j.event.EventRecodingLogger.java`:
 ** Issue: Thread cannot be resolved
 *** Idea: In script-mode, the thread name is now always `n/a`.
 
-. ✔️ `org.slf4j.helpers.BasicMarker.java`:
+. {check} `org.slf4j.helpers.BasicMarker.java`:
 ** Issue: CopyOnWriteArrayList cannot be resolved to a type
 *** Idea: Use a simple `ArrayList` in script-mode
 
-. ❌ `org.slf4j.helpers.BasicMDCAdapter.java`:
+. {error} `org.slf4j.helpers.BasicMDCAdapter.java`:
 ** Issue: InheritableThreadLocal cannot be resolved to a type
 *** Comment: Although the JRE emulation includes a `java.lang.ThreadLocal`, there is no `InheritableThreadLocal`.
 *** Idea: GwtIncompatible the whole class.
 
-. `org.slf4j.helpers.MessageFormatter.java`:
+. {check} `org.slf4j.helpers.MessageFormatter.java`:
 ** The import java.text.MessageFormat cannot be resolved
+*** Idea: Was just imported for the JavaDocs. Added full package name to JavaDoc.
 
 . `org.slf4j.helpers.NamedLoggerBase.java`:
 ** ObjectStreamException cannot be resolved to a type
