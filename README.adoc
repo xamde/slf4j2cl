@@ -8,3 +8,68 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 
 - Import sources of slf4j 1.7.36
 - Add custom `pom.xml` and this document to document the creation process
+- A naive j2cl compile lists 65 issues in `stripped_sources` for our code.
+- Adding a `Platform` which encapsulates the diff between script-world and jre-world worked fine for the first issue, J2cl compile reports 64 remaining issues.
+
+
+=== Issues and Solutions
+
+. `org.slf4j.event.EventRecodingLogger.java`:
+** Issue: Thread cannot be resolved
+*** Idea: In script-mode, the thread name is now always `n/a`.
+
+. `org.slf4j.helpers.BasicMarker.java`:
+** CopyOnWriteArrayList cannot be resolved to a type
+** The import java.util.concurrent.CopyOnWriteArrayList cannot be resolved
+
+. `org.slf4j.helpers.BasicMDCAdapter.java`:
+** InheritableThreadLocal cannot be resolved to a type
+** The method childValue(Map<String,String>) of type new InheritableThreadLocal<Map<String,String>>(){} must override or implement a supertype method
+
+. `org.slf4j.helpers.MessageFormatter.java`:
+** The import java.text.MessageFormat cannot be resolved
+
+. `org.slf4j.helpers.NamedLoggerBase.java`:
+** ObjectStreamException cannot be resolved to a type
+** The import java.io.ObjectStreamException cannot be resolved
+
+. `org.slf4j.helpers.SubstituteLogger.java`:
+** IllegalAccessException cannot be resolved to a type
+** InvocationTargetException cannot be resolved to a type
+** Method cannot be resolved to a type
+** NoSuchMethodException cannot be resolved to a type
+** The import java.lang.reflect.InvocationTargetException cannot be resolved
+** The import java.lang.reflect.Method cannot be resolved
+** The method getMethod(String, Class<LoggingEvent>) is undefined for the type Class<capture#3-of ? extends Logger>
+** LinkedBlockingQueue cannot be resolved to a type
+** The import java.util.concurrent.LinkedBlockingQueue cannot be resolved
+
+. `org.slf4j.helpers.Util.java`:
+** SecurityManager cannot be resolved to a type
+
+. `org.slf4j.LoggerFactory.java`:
+** ClassLoader cannot be resolved
+** ClassLoader cannot be resolved to a type
+** java.lang.NoSuchMethodError cannot be resolved to a type
+** LinkedBlockingQueue cannot be resolved to a type
+** No exception of type NoSuchFieldError can be thrown; an exception type must be a subclass of Throwable
+** NoClassDefFoundError cannot be resolved to a type
+** The import java.net cannot be resolved
+** The import java.util.concurrent.LinkedBlockingQueue cannot be resolved
+** The method findPossibleStaticLoggerBinderPathSet() from the type LoggerFactory refers to the missing type URL
+** The method format(String, String, String) is undefined for the type String
+** The method getClassLoader() is undefined for the type Class<LoggerFactory>
+** The method getEventQueue() from the type SubstituteLoggerFactory refers to the missing type LinkedBlockingQueue
+** The method isAssignableFrom(Class<capture#8-of ?>) is undefined for the type Class<capture#7-of ?>
+** The type java.lang.NoSuchFieldError is not visible
+** URL cannot be resolved to a type
+
+. `org.slf4j.MarkerFactory.java`:
+** NoClassDefFoundError cannot be resolved to a type
+** NoSuchMethodError cannot be resolved to a type
+** The method bwCompatibleGetMarkerFactoryFromBinder() from the type MarkerFactory refers to the missing type NoClassDefFoundError
+
+. `org.slf4j.MDC.java`:
+** NoClassDefFoundError cannot be resolved to a type
+** NoSuchMethodError cannot be resolved to a type
+** The method bwCompatibleGetMDCAdapterFromBinder() from the type MDC refers to the missing type NoClassDefFoundError

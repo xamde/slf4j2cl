@@ -1,11 +1,12 @@
 package org.slf4j.event;
 
 import java.util.Queue;
-
+import org.slf4j.j2cl.GwtIncompatible;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.helpers.SubstituteLogger;
+import org.slf4j.j2cl.Platform;
 
 /**
  *
@@ -313,11 +314,12 @@ public class EventRecodingLogger implements Logger {
         loggingEvent.setLoggerName(name);
         loggingEvent.setMarker(marker);
         loggingEvent.setMessage(msg);
-        loggingEvent.setThreadName(Thread.currentThread().getName());
+        loggingEvent.setThreadName(Platform.get().getCurrentThreadName());
 
         loggingEvent.setArgumentArray(args);
         loggingEvent.setThrowable(throwable);
 
         eventQueue.add(loggingEvent);
     }
+
 }
