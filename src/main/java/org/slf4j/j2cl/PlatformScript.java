@@ -3,6 +3,7 @@ package org.slf4j.j2cl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 class PlatformScript {
@@ -13,6 +14,7 @@ class PlatformScript {
 
     /**
      * There are no threads in script mode, so this {@link ArrayList} is thread-safe enough
+     *
      * @param <E>
      * @return
      */
@@ -24,11 +26,11 @@ class PlatformScript {
         return true;
     }
 
-    public void runOnlyOnJre( Runnable runnable ) {
+    public void runOnlyOnJre(Runnable runnable) {
         // NO-OP
     }
 
-    public void runOnlyInScript( Runnable runnable ) {
+    public void runOnlyInScript(Runnable runnable) {
         runnable.run();
     }
 
@@ -86,4 +88,7 @@ class PlatformScript {
         return new SimpleFifoQueue<>();
     }
 
+    public ThreadLocal<Map<String, String>> createInheritableThreadLocal() {
+        return new ThreadLocal<>();
+    }
 }

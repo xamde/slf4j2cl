@@ -1,6 +1,8 @@
 package org.slf4j.j2cl;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -52,5 +54,19 @@ class PlatformJre extends PlatformScript {
     @Override
     public <E> LinkedBlockingQueue<E> createLinkedBlockingQueue() {
         return new LinkedBlockingQueue<E>();
+    }
+
+    @GwtIncompatible
+    @Override
+    public ThreadLocal<Map<String, String>> createInheritableThreadLocal() {
+        return new InheritableThreadLocal<Map<String, String>>() {
+            @Override
+            protected Map<String, String> childValue(Map<String, String> parentValue) {
+                if (parentValue == null) {
+                    return null;
+                }
+                return new HashMap<String, String>(parentValue);
+            }
+        };
     }
 }

@@ -25,6 +25,7 @@
 package org.slf4j.helpers;
 
 import org.slf4j.j2cl.GwtIncompatible;
+import org.slf4j.j2cl.Platform;
 import org.slf4j.spi.MDCAdapter;
 
 import java.util.*;
@@ -43,18 +44,9 @@ import java.util.Map;
  * 
  * @since 1.5.0
  */
-@GwtIncompatible
 public class BasicMDCAdapter implements MDCAdapter {
 
-    private InheritableThreadLocal<Map<String, String>> inheritableThreadLocal = new InheritableThreadLocal<Map<String, String>>() {
-        @Override
-        protected Map<String, String> childValue(Map<String, String> parentValue) {
-            if (parentValue == null) {
-                return null;
-            }
-            return new HashMap<String, String>(parentValue);
-        }
-    };
+    private ThreadLocal<Map<String, String>> inheritableThreadLocal = Platform.get().createInheritableThreadLocal();
 
     /**
      * Put a context value (the <code>val</code> parameter) as identified with
