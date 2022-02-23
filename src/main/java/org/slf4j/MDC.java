@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.slf4j.helpers.BasicMDCAdapter;
 import org.slf4j.helpers.Util;
+import org.slf4j.j2cl.GwtIncompatible;
 import org.slf4j.spi.MDCAdapter;
 import org.slf4j.helpers.NOPMDCAdapter;
 import org.slf4j.impl.StaticMDCBinder;
@@ -94,6 +95,7 @@ public class MDC {
      * @throws NoClassDefFoundError in case no binding is available
      * @since 1.7.14
      */
+    @GwtIncompatible
     private static MDCAdapter bwCompatibleGetMDCAdapterFromBinder() throws NoClassDefFoundError {
         try {
             return StaticMDCBinder.getSingleton().getMDCA();
@@ -103,23 +105,43 @@ public class MDC {
         }
     }
 
-    static {
-        try {
-            mdcAdapter = bwCompatibleGetMDCAdapterFromBinder();
-        } catch (NoClassDefFoundError ncde) {
-            mdcAdapter = new NOPMDCAdapter();
-            String msg = ncde.getMessage();
-            if (msg != null && msg.contains("StaticMDCBinder")) {
-                Util.report("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
-                Util.report("Defaulting to no-operation MDCAdapter implementation.");
-                Util.report("See " + NO_STATIC_MDC_BINDER_URL + " for further details.");
-            } else {
-                throw ncde;
-            }
-        } catch (Exception e) {
-            // we should never get here
-            Util.report("MDC binding unsuccessful.", e);
+    private static final Vary VARY;
+
+    private static class Vary_script {
+
+        public void init() {
+            mdcAdapter = StaticMDCBinder.getSingleton().getMDCA();
         }
+    }
+
+    private static class Vary extends Vary_script {
+
+        @GwtIncompatible
+        @Override
+        public void init() {
+            try {
+                mdcAdapter = bwCompatibleGetMDCAdapterFromBinder();
+            } catch (NoClassDefFoundError ncde) {
+                mdcAdapter = new NOPMDCAdapter();
+                String msg = ncde.getMessage();
+                if (msg != null && msg.contains("StaticMDCBinder")) {
+                    Util.report("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
+                    Util.report("Defaulting to no-operation MDCAdapter implementation.");
+                    Util.report("See " + NO_STATIC_MDC_BINDER_URL + " for further details.");
+                } else {
+                    throw ncde;
+                }
+            } catch (Exception e) {
+                // we should never get here
+                Util.report("MDC binding unsuccessful.", e);
+            }
+        }
+    }
+
+
+    static {
+        VARY = new Vary();
+        VARY.init();
     }
 
     /**

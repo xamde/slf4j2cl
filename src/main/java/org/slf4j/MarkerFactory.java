@@ -27,6 +27,7 @@ package org.slf4j;
 import org.slf4j.helpers.Util;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.impl.StaticMarkerBinder;
+import org.slf4j.j2cl.GwtIncompatible;
 
 /**
  * MarkerFactory is a utility class producing {@link Marker} instances as
@@ -47,33 +48,56 @@ public class MarkerFactory {
     private MarkerFactory() {
     }
 
+
+    private static class Vary_script {
+
+        public void init() {
+            MARKER_FACTORY = StaticMarkerBinder.SINGLETON.getMarkerFactory();
+        }
+
+    }
+
+    private static class Vary extends Vary_script {
+
+        @GwtIncompatible
+        @Override
+        public void init() {
+            try {
+                MARKER_FACTORY = bwCompatibleGetMarkerFactoryFromBinder();
+            } catch (NoClassDefFoundError e) {
+                MARKER_FACTORY = new BasicMarkerFactory();
+            } catch (Exception e) {
+                // we should never get here
+                Util.report("Unexpected failure while binding MarkerFactory", e);
+            }
+        }
+    }
+
+
+    private static final Vary VARY;
+
+    // this is where the binding happens
+    static {
+        VARY = new Vary();
+        VARY.init();
+    }
+
     /**
      * As of SLF4J version 1.7.14, StaticMarkerBinder classes shipping in various bindings
-     * come with a getSingleton() method. Previously only a public field called SINGLETON 
+     * come with a getSingleton() method. Previously only a public field called SINGLETON
      * was available.
-     * 
+     *
      * @return IMarkerFactory
      * @throws NoClassDefFoundError in case no binding is available
      * @since 1.7.14
      */
+    @GwtIncompatible
     private static IMarkerFactory bwCompatibleGetMarkerFactoryFromBinder() throws NoClassDefFoundError {
         try {
             return StaticMarkerBinder.getSingleton().getMarkerFactory();
         } catch (NoSuchMethodError nsme) {
             // binding is probably a version of SLF4J older than 1.7.14
             return StaticMarkerBinder.SINGLETON.getMarkerFactory();
-        }
-    }
-
-    // this is where the binding happens
-    static {
-        try {
-            MARKER_FACTORY = bwCompatibleGetMarkerFactoryFromBinder();
-        } catch (NoClassDefFoundError e) {
-            MARKER_FACTORY = new BasicMarkerFactory();
-        } catch (Exception e) {
-            // we should never get here
-            Util.report("Unexpected failure while binding MarkerFactory", e);
         }
     }
 

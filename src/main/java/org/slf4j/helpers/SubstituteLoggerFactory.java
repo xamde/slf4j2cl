@@ -24,16 +24,16 @@
  */
 package org.slf4j.helpers;
 
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.event.SubstituteLoggingEvent;
+import org.slf4j.j2cl.Platform;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.slf4j.ILoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.event.SubstituteLoggingEvent;
-import org.slf4j.j2cl.GwtIncompatible;
+import java.util.Queue;
 
 /**
  * SubstituteLoggerFactory manages instances of {@link SubstituteLogger}.
@@ -41,14 +41,13 @@ import org.slf4j.j2cl.GwtIncompatible;
  * @author Ceki G&uuml;lc&uuml;
  * @author Chetan Mehrotra
  */
-@GwtIncompatible
 public class SubstituteLoggerFactory implements ILoggerFactory {
 
     boolean postInitialization = false;
     
     final Map<String, SubstituteLogger> loggers = new HashMap<String, SubstituteLogger>();
 
-    final LinkedBlockingQueue<SubstituteLoggingEvent> eventQueue = new LinkedBlockingQueue<SubstituteLoggingEvent>();
+    final Queue<SubstituteLoggingEvent> eventQueue = Platform.get().createLinkedBlockingQueue();
 
     synchronized public Logger getLogger(String name) {
         SubstituteLogger logger = loggers.get(name);
@@ -67,7 +66,7 @@ public class SubstituteLoggerFactory implements ILoggerFactory {
         return new ArrayList<SubstituteLogger>(loggers.values());
     }
 
-    public LinkedBlockingQueue<SubstituteLoggingEvent> getEventQueue() {
+    public Queue<SubstituteLoggingEvent> getEventQueue() {
         return eventQueue;
     }
 

@@ -46,18 +46,18 @@ import org.slf4j.j2cl.GwtIncompatible;
  * @author Chetan Mehrotra
  * @author Ceki Gulcu
  */
-@GwtIncompatible
-public class SubstituteLogger implements Logger {
+public class SubstituteLogger extends SubstituteLogger_j2cl implements Logger {
 
     private final String name;
     private volatile Logger _delegate;
     private Boolean delegateEventAware;
+    @GwtIncompatible
     private Method logMethodCache;
     private EventRecodingLogger eventRecodingLogger;
     private Queue<SubstituteLoggingEvent> eventQueue;
 
     private final boolean createdPostInitialization;
-    
+
     public SubstituteLogger(String name, Queue<SubstituteLoggingEvent> eventQueue, boolean createdPostInitialization) {
         this.name = name;
         this.eventQueue = eventQueue;
@@ -358,6 +358,8 @@ public class SubstituteLogger implements Logger {
         this._delegate = delegate;
     }
 
+    @GwtIncompatible
+    @Override
     public boolean isDelegateEventAware() {
         if (delegateEventAware != null)
             return delegateEventAware;
@@ -371,6 +373,8 @@ public class SubstituteLogger implements Logger {
         return delegateEventAware;
     }
 
+    @GwtIncompatible
+    @Override
     public void log(LoggingEvent event) {
         if (isDelegateEventAware()) {
             try {

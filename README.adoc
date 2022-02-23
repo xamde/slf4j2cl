@@ -1,4 +1,5 @@
 = slf4j2cl
+:toc:
 :check: ✔️
 :error: ❌
 
@@ -42,38 +43,137 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 *** Comment: Not part of JRE emulation. Used in readResolve() method, which is used when objects -- here the logger instances -- are deserialized. This feature is not required in script-mode.
 *** Idea: GwtIncompatible the method
 
-. {error} `org.slf4j.helpers.SubstituteLogger.java`:
+. {check} `org.slf4j.helpers.SubstituteLogger.java`:
 ** Missing imports: java.lang.reflect.InvocationTargetException, java.lang.reflect.Method, java.util.concurrent.LinkedBlockingQueue
 ** Missing types: IllegalAccessException, NoSuchMethodException
 ** The method getMethod(String, Class<LoggingEvent>) is undefined for the type Class<capture#3-of ? extends Logger>
 *** Idea: Too much reflection to work around; `@GwtIncompatible` this class and its factory `SubstituteLoggerFactory`
+**** Issue: Used in many places
+***** Idea: Provide a script-impl which is never delegate-aware and always sends `log(LoggingEvent event)` to nowhere. Normal debug/info/... log calls are forwarded to the underlying delegate just fine.
 
-. `org.slf4j.helpers.Util.java`:
+. {check} `org.slf4j.helpers.Util.java`:
 ** SecurityManager cannot be resolved to a type
+*** Idea: Just `@GwtIncompatible` these parts and deal with the call-sites later. Most features work.
 
-. `org.slf4j.LoggerFactory.java`:
-** ClassLoader cannot be resolved
-** ClassLoader cannot be resolved to a type
-** java.lang.NoSuchMethodError cannot be resolved to a type
-** LinkedBlockingQueue cannot be resolved to a type
-** No exception of type NoSuchFieldError can be thrown; an exception type must be a subclass of Throwable
-** NoClassDefFoundError cannot be resolved to a type
-** The import java.net cannot be resolved
-** The import java.util.concurrent.LinkedBlockingQueue cannot be resolved
-** The method findPossibleStaticLoggerBinderPathSet() from the type LoggerFactory refers to the missing type URL
-** The method format(String, String, String) is undefined for the type String
-** The method getClassLoader() is undefined for the type Class<LoggerFactory>
-** The method getEventQueue() from the type SubstituteLoggerFactory refers to the missing type LinkedBlockingQueue
-** The method isAssignableFrom(Class<capture#8-of ?>) is undefined for the type Class<capture#7-of ?>
-** The type java.lang.NoSuchFieldError is not visible
-** URL cannot be resolved to a type
+. {check} `org.slf4j.LoggerFactory.java`:
 
-. `org.slf4j.MarkerFactory.java`:
-** NoClassDefFoundError cannot be resolved to a type
-** NoSuchMethodError cannot be resolved to a type
-** The method bwCompatibleGetMarkerFactoryFromBinder() from the type MarkerFactory refers to the missing type NoClassDefFoundError
+** {check} binding phase
+*** Missing imports/type: java.net.URL, ClassLoader, java.lang.NoSuchMethodError, NoSuchFieldError, NoClassDefFoundError
+*** The method findPossibleStaticLoggerBinderPathSet() from the type LoggerFactory refers to the missing type URL
+*** The method getClassLoader() is undefined for the type Class<LoggerFactory>
+**** Idea: skip binding and hard-wire to a built-in logger
 
-. `org.slf4j.MDC.java`:
-** NoClassDefFoundError cannot be resolved to a type
-** NoSuchMethodError cannot be resolved to a type
-** The method bwCompatibleGetMDCAdapterFromBinder() from the type MDC refers to the missing type NoClassDefFoundError
+** {check} replay events after binding
+*** The import java.util.concurrent.LinkedBlockingQueue cannot be resolved
+**** Idea: replace `LinkedBlockingQueue` with `Queue` and add a helper method for `drainTo` to drain a Queue to the `Platform`.
+
+** {error} detect logger name mismatch
+*** The method format(String, String, String) is undefined for the type String
+**** Idea: remove this feature in script mode
+
+
+. {check} `org.slf4j.MarkerFactory.java`:
+** binding
+*** NoClassDefFoundError cannot be resolved to a type
+*** NoSuchMethodError cannot be resolved to a type
+*** The method bwCompatibleGetMarkerFactoryFromBinder() from the type MarkerFactory refers to the missing type NoClassDefFoundError
+**** Idea: hard-code binding
+
+. {check} `org.slf4j.MDC.java`:
+** binding
+*** NoClassDefFoundError cannot be resolved to a type
+*** NoSuchMethodError cannot be resolved to a type
+*** The method bwCompatibleGetMDCAdapterFromBinder() from the type MDC refers to the missing type NoClassDefFoundError
+**** Idea: hard-code binding
+
+
+
+=== J2CL Gotchas
+The JRE whitelist
+http://www.gwtproject.org/doc/latest/RefJreEmulation.html
+is really important but not very detailed.
+
+E.g. `System.getProperty(String key)` works only, when the given key is known at compile-time.
+
+
+=== J2CL Patterns
+
+==== Vary by Subclassing
+When instances of AAA should behave different when run in JRE vs. when run in script-mode.
+
+[source,java]
+----
+class AAA_script {
+    void aaa() { /* shared-code implementation for script-mode */ }
+}
+
+class AAA extends AAA_script {
+    @GwtIncompatible
+    @Override
+    void aaa() { /* JRE-only implementation */ }
+}
+----
+
+.What j2cl sees
+----
+class AAA_script {
+    void aaa() { /* shared-code implementation for script-mode */ }
+}
+
+class AAA extends AAA_script {
+}
+----
+
+.Calling
+----
+AAA a = new AAA();
+a.aaa(); // -> polymorphism at work
+----
+
+- The JRE sees the full code and calls the `AAA.aaa()` impl
+- J2CL sees the method as not being overriden and calls `AAA_script.aaa()`
+
+
+==== Vary in Static Code
+As static code cannot overwrite methods, we need to introduce variance points using instances.
+This transformation was used in several places:
+
+.Before (j2cl incompatible)
+----
+static class AAA {
+    void bbb() {
+        // do JRE-specific stuff
+    }
+    void ccc() {
+        // some code that calls bbb
+        bbb();
+    }
+}
+----
+
+.After (j2cl compatible)
+----
+static class AAA {
+    private static Vary VARY = new Vary();
+    private static class Vary_script {
+        void bbb() {
+            // a j2cl-compatible shared code way to do 'bbb'
+            // or do nothing
+        }
+    }
+    private static class Vary implements Vary_script {
+
+        @GwtIncompatible
+        @Overrride
+        void bbb() {
+            // do JRE-specific stuff
+        }
+
+    }
+    void ccc() {
+        // some code that calls bbb
+        VARY.bbb();
+    }
+}
+----
+

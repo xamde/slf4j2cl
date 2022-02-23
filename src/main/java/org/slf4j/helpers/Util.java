@@ -24,6 +24,8 @@
  */
 package org.slf4j.helpers;
 
+import org.slf4j.j2cl.GwtIncompatible;
+
 /**
  * An internal utility class.
  *
@@ -36,6 +38,7 @@ public final class Util {
     private Util() {
     }
 
+    @GwtIncompatible
     public static String safeGetSystemProperty(String key) {
         if (key == null)
             throw new IllegalArgumentException("null input");
@@ -49,6 +52,7 @@ public final class Util {
         return result;
     }
 
+    @GwtIncompatible
     public static boolean safeGetBooleanSystemProperty(String key) {
         String value = safeGetSystemProperty(key);
         if (value == null)
@@ -62,15 +66,19 @@ public final class Util {
      * protected method, we add this wrapper which allows the method to be visible
      * inside this package.
      */
+    @GwtIncompatible
     private static final class ClassContextSecurityManager extends SecurityManager {
         protected Class<?>[] getClassContext() {
             return super.getClassContext();
         }
     }
 
+    @GwtIncompatible
     private static ClassContextSecurityManager SECURITY_MANAGER;
+    @GwtIncompatible
     private static boolean SECURITY_MANAGER_CREATION_ALREADY_ATTEMPTED = false;
 
+    @GwtIncompatible
     private static ClassContextSecurityManager getSecurityManager() {
         if (SECURITY_MANAGER != null)
             return SECURITY_MANAGER;
@@ -83,6 +91,7 @@ public final class Util {
         }
     }
 
+    @GwtIncompatible
     private static ClassContextSecurityManager safeCreateSecurityManager() {
         try {
             return new ClassContextSecurityManager();
@@ -96,6 +105,7 @@ public final class Util {
      *
      * @return the name of the class which called the invoking method.
      */
+    @GwtIncompatible
     public static Class<?> getCallingClass() {
         ClassContextSecurityManager securityManager = getSecurityManager();
         if (securityManager == null)

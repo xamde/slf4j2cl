@@ -24,6 +24,15 @@
  */
 package org.slf4j;
 
+import org.slf4j.event.SubstituteLoggingEvent;
+import org.slf4j.helpers.NOPLoggerFactory;
+import org.slf4j.helpers.SubstituteLogger;
+import org.slf4j.helpers.SubstituteLoggerFactory;
+import org.slf4j.helpers.Util;
+import org.slf4j.impl.StaticLoggerBinder;
+import org.slf4j.j2cl.GwtIncompatible;
+import org.slf4j.j2cl.Platform;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,15 +40,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.slf4j.helpers.NOPLoggerFactory;
-import org.slf4j.helpers.Util;
-import org.slf4j.event.SubstituteLoggingEvent;
-import org.slf4j.helpers.SubstituteLogger;
-import org.slf4j.helpers.SubstituteLoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * The <code>LoggerFactory</code> is a utility class producing Loggers for
@@ -90,7 +92,48 @@ public final class LoggerFactory {
     static final String DETECT_LOGGER_NAME_MISMATCH_PROPERTY = "slf4j.detectLoggerNameMismatch";
     static final String JAVA_VENDOR_PROPERTY = "java.vendor.url";
 
+    @GwtIncompatible
     static boolean DETECT_LOGGER_NAME_MISMATCH = Util.safeGetBooleanSystemProperty(DETECT_LOGGER_NAME_MISMATCH_PROPERTY);
+    private static final Vary VARY = new Vary();
+
+    private static class Vary_script {
+
+        public void performInitialization() {
+            // the next line does the binding
+            StaticLoggerBinder.getSingleton();
+            INITIALIZATION_STATE = SUCCESSFUL_INITIALIZATION;
+            Util.report("Actual binding is of type [" + StaticLoggerBinder.getSingleton().getLoggerFactoryClassStr() + "]");
+            postBindCleanUp();
+        }
+
+        public void detectLoggerNameMismatch(Logger logger, Class<?> clazz) {
+            // cannot detect in script
+        }
+
+    }
+
+
+    private static class Vary extends Vary_script {
+
+        @GwtIncompatible
+        @Override
+        public void performInitialization() {
+            performInitialization();
+        }
+
+        @GwtIncompatible
+        @Override
+        public void detectLoggerNameMismatch(Logger logger, Class<?> clazz) {
+            if (DETECT_LOGGER_NAME_MISMATCH) {
+                Class<?> autoComputedCallingClass = Util.getCallingClass();
+                if (autoComputedCallingClass != null && nonMatchingClasses(clazz, autoComputedCallingClass)) {
+                    Util.report(String.format("Detected logger name mismatch. Given name: \"%s\"; computed name: \"%s\".", logger.getName(),
+                            autoComputedCallingClass.getName()));
+                    Util.report("See " + LOGGER_NAME_MISMATCH_URL + " for an explanation");
+                }
+            }
+        }
+    }
 
     /**
      * It is LoggerFactory's responsibility to track version changes and manage
@@ -120,6 +163,7 @@ public final class LoggerFactory {
         INITIALIZATION_STATE = UNINITIALIZED;
     }
 
+    @GwtIncompatible
     private final static void performInitialization() {
         bind();
         if (INITIALIZATION_STATE == SUCCESSFUL_INITIALIZATION) {
@@ -137,6 +181,7 @@ public final class LoggerFactory {
         return false;
     }
 
+    @GwtIncompatible
     private final static void bind() {
         try {
             Set<URL> staticLoggerBinderPathSet = null;
@@ -202,13 +247,13 @@ public final class LoggerFactory {
     }
 
     private static void replayEvents() {
-        final LinkedBlockingQueue<SubstituteLoggingEvent> queue = SUBST_FACTORY.getEventQueue();
+        final Queue<SubstituteLoggingEvent> queue = SUBST_FACTORY.getEventQueue();
         final int queueSize = queue.size();
         int count = 0;
         final int maxDrain = 128;
         List<SubstituteLoggingEvent> eventList = new ArrayList<SubstituteLoggingEvent>(maxDrain);
         while (true) {
-            int numDrained = queue.drainTo(eventList, maxDrain);
+            int numDrained = Platform.get().drainQueueTo(  queue, eventList, maxDrain);
             if (numDrained == 0)
                 break;
             for (SubstituteLoggingEvent event : eventList) {
@@ -263,6 +308,7 @@ public final class LoggerFactory {
         Util.report("See also " + REPLAY_URL);
     }
 
+    @GwtIncompatible
     private final static void versionSanityCheck() {
         try {
             String requested = StaticLoggerBinder.REQUESTED_API_VERSION;
@@ -294,6 +340,7 @@ public final class LoggerFactory {
     // the class itself.
     private static String STATIC_LOGGER_BINDER_PATH = "org/slf4j/impl/StaticLoggerBinder.class";
 
+    @GwtIncompatible
     static Set<URL> findPossibleStaticLoggerBinderPathSet() {
         // use Set instead of list in order to deal with bug #138
         // LinkedHashSet appropriate here because it preserves insertion order
@@ -317,6 +364,7 @@ public final class LoggerFactory {
         return staticLoggerBinderPathSet;
     }
 
+    @GwtIncompatible
     private static boolean isAmbiguousStaticLoggerBinderPathSet(Set<URL> binderPathSet) {
         return binderPathSet.size() > 1;
     }
@@ -326,6 +374,7 @@ public final class LoggerFactory {
      * on the class path. No reporting is done otherwise.
      * 
      */
+    @GwtIncompatible
     private static void reportMultipleBindingAmbiguity(Set<URL> binderPathSet) {
         if (isAmbiguousStaticLoggerBinderPathSet(binderPathSet)) {
             Util.report("Class path contains multiple SLF4J bindings.");
@@ -336,6 +385,7 @@ public final class LoggerFactory {
         }
     }
 
+    @GwtIncompatible
     private static boolean isAndroid() {
         String vendor = Util.safeGetSystemProperty(JAVA_VENDOR_PROPERTY);
         if (vendor == null)
@@ -343,6 +393,7 @@ public final class LoggerFactory {
         return vendor.toLowerCase().contains("android");
     }
 
+    @GwtIncompatible
     private static void reportActualBinding(Set<URL> binderPathSet) {
         // binderPathSet can be null under Android
         if (binderPathSet != null && isAmbiguousStaticLoggerBinderPathSet(binderPathSet)) {
@@ -386,17 +437,12 @@ public final class LoggerFactory {
      */
     public static Logger getLogger(Class<?> clazz) {
         Logger logger = getLogger(clazz.getName());
-        if (DETECT_LOGGER_NAME_MISMATCH) {
-            Class<?> autoComputedCallingClass = Util.getCallingClass();
-            if (autoComputedCallingClass != null && nonMatchingClasses(clazz, autoComputedCallingClass)) {
-                Util.report(String.format("Detected logger name mismatch. Given name: \"%s\"; computed name: \"%s\".", logger.getName(),
-                                autoComputedCallingClass.getName()));
-                Util.report("See " + LOGGER_NAME_MISMATCH_URL + " for an explanation");
-            }
-        }
+        VARY.detectLoggerNameMismatch(logger,clazz);
         return logger;
     }
 
+
+    @GwtIncompatible
     private static boolean nonMatchingClasses(Class<?> clazz, Class<?> autoComputedCallingClass) {
         return !autoComputedCallingClass.isAssignableFrom(clazz);
     }
@@ -414,7 +460,7 @@ public final class LoggerFactory {
             synchronized (LoggerFactory.class) {
                 if (INITIALIZATION_STATE == UNINITIALIZED) {
                     INITIALIZATION_STATE = ONGOING_INITIALIZATION;
-                    performInitialization();
+                    VARY.performInitialization();
                 }
             }
         }
