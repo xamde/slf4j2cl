@@ -1,0 +1,10 @@
+= slf4j2cl
+
+**s**imple **l**ogging **f**acade **f**or **j**ava **t**o **c**losure **c**ompiler
+
+Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://github.com/google/j2cl[j2cl] compatible code. Especially in shared code, which can run on the client (as Javascript) and in the backend (as Java).
+
+== Process
+
+- Import sources of slf4j 1.7.36
+- Add custom `pom.xml` and this document to document the creation process
