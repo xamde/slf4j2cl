@@ -1,7 +1,7 @@
 package org.slf4j.event;
 
 import java.util.Queue;
-import org.slf4j.j2cl.GwtIncompatible;
+
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
