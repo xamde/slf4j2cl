@@ -1,5 +1,6 @@
 = slf4j2cl
 :toc:
+:toclevels: 4
 :check: ✔️
 :error: ❌
 
@@ -13,7 +14,7 @@ Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://gith
 - Add custom `pom.xml` and this document to document the creation process
 - A naive j2cl compile lists 65 issues in `stripped_sources` for our code.
 - Adding a `Platform` which encapsulates the diff between script-world and jre-world worked fine for the first issue, J2cl compile reports 64 remaining issues.
-
+- Creating the actual log-implementation forwarding to `elemental2.dom.Console.debug/info/warn/error`
 
 === Issues and Solutions
 .Legend
@@ -177,3 +178,37 @@ static class AAA {
 }
 ----
 
+==== Back-wrap elemental2-APIs for Testing
+This is a weird one, but it seems to work.
+
+Use when: You want to run client-side code using e.g. `elemental2.dom.Console` in JRE
+
+.elemental2.dom.Console (Given)
+[source,java]
+----
+@JsType(isNative = true, namespace = JsPackage.GLOBAL)
+public class Console {
+  public native void debug(Object... var_data);
+}
+----
+
+.Console_wrapped (NEW)
+[source,java]
+----
+public class Console_wrapped extends elemental2.dom.Console {
+    @Override
+    @GwtIncompatible
+    public void debug(Object... var_data) {
+        System.out.println("DEBUG " + Arrays.toString(var_data));
+    }
+}
+----
+
+.What J2CL sees
+[source,java]
+----
+public class Console_wrapped extends elemental2.dom.Console {
+}
+----
+
+Caveat: Your code needs to use `Console_wrapped` instead of `Console`.

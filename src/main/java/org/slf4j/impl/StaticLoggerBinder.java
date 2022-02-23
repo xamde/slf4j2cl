@@ -26,16 +26,11 @@ package org.slf4j.impl;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
+import org.slf4j.j2cl.J2clLoggerFactory;
 
 /**
  * The binding of {@link LoggerFactory} class with an actual instance of
  * {@link ILoggerFactory} is performed using information returned by this class.
- *
- * This class is meant to provide a dummy StaticLoggerBinder to the slf4j-api module.
- * Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
- * slf4j-log4j12 etc.
- *
- * @author Ceki G&uuml;lc&uuml;
  */
 public class StaticLoggerBinder {
 
@@ -60,15 +55,11 @@ public class StaticLoggerBinder {
     // to avoid constant folding by the compiler, this field must *not* be final
     public static String REQUESTED_API_VERSION = "1.6.99"; // !final
 
-    private StaticLoggerBinder() {
-        throw new UnsupportedOperationException("This code should have never made it into slf4j-api.jar");
-    }
-
     public ILoggerFactory getLoggerFactory() {
-        throw new UnsupportedOperationException("This code should never make it into slf4j-api.jar");
+        return J2clLoggerFactory.getInstance();
     }
 
     public String getLoggerFactoryClassStr() {
-        throw new UnsupportedOperationException("This code should never make it into slf4j-api.jar");
+        return "org.slf4j.j2cl.J2clLoggerFactory";
     }
 }
