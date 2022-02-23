@@ -137,4 +137,12 @@
         </repository>
     </repositories>
 
+    <distributionManagement>
+        <repository>
+            <id>github-slf4j2cl</id>
+            <name>GitHub xamde Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/xamde/slf4j2cl</url>
+        </repository>
+    </distributionManagement>
+
 </project>
