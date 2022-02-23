@@ -34,6 +34,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.EventRecodingLogger;
 import org.slf4j.event.LoggingEvent;
 import org.slf4j.event.SubstituteLoggingEvent;
+import org.slf4j.j2cl.GwtIncompatible;
 
 /**
  * A logger implementation which logs via a delegate logger. By default, the delegate is a
@@ -45,6 +46,7 @@ import org.slf4j.event.SubstituteLoggingEvent;
  * @author Chetan Mehrotra
  * @author Ceki Gulcu
  */
+@GwtIncompatible
 public class SubstituteLogger implements Logger {
 
     private final String name;

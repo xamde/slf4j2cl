@@ -33,6 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.event.SubstituteLoggingEvent;
+import org.slf4j.j2cl.GwtIncompatible;
 
 /**
  * SubstituteLoggerFactory manages instances of {@link SubstituteLogger}.
@@ -40,6 +41,7 @@ import org.slf4j.event.SubstituteLoggingEvent;
  * @author Ceki G&uuml;lc&uuml;
  * @author Chetan Mehrotra
  */
+@GwtIncompatible
 public class SubstituteLoggerFactory implements ILoggerFactory {
 
     boolean postInitialization = false;
