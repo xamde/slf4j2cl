@@ -62,61 +62,20 @@ public final class Util {
     }
 
     /**
-     * In order to call {@link SecurityManager#getClassContext()}, which is a
-     * protected method, we add this wrapper which allows the method to be visible
-     * inside this package.
-     */
-    @GwtIncompatible
-    private static final class ClassContextSecurityManager extends SecurityManager {
-        protected Class<?>[] getClassContext() {
-            return super.getClassContext();
-        }
-    }
-
-    @GwtIncompatible
-    private static ClassContextSecurityManager SECURITY_MANAGER;
-    @GwtIncompatible
-    private static boolean SECURITY_MANAGER_CREATION_ALREADY_ATTEMPTED = false;
-
-    @GwtIncompatible
-    private static ClassContextSecurityManager getSecurityManager() {
-        if (SECURITY_MANAGER != null)
-            return SECURITY_MANAGER;
-        else if (SECURITY_MANAGER_CREATION_ALREADY_ATTEMPTED)
-            return null;
-        else {
-            SECURITY_MANAGER = safeCreateSecurityManager();
-            SECURITY_MANAGER_CREATION_ALREADY_ATTEMPTED = true;
-            return SECURITY_MANAGER;
-        }
-    }
-
-    @GwtIncompatible
-    private static ClassContextSecurityManager safeCreateSecurityManager() {
-        try {
-            return new ClassContextSecurityManager();
-        } catch (java.lang.SecurityException sm) {
-            return null;
-        }
-    }
-
-    /**
      * Returns the name of the class which called the invoking method.
      *
      * @return the name of the class which called the invoking method.
      */
     @GwtIncompatible
     public static Class<?> getCallingClass() {
-        ClassContextSecurityManager securityManager = getSecurityManager();
-        if (securityManager == null)
-            return null;
-        Class<?>[] trace = securityManager.getClassContext();
         String thisClassName = Util.class.getName();
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 
         // Advance until Util is found
         int i;
         for (i = 0; i < trace.length; i++) {
-            if (thisClassName.equals(trace[i].getName()))
+            Class<? extends StackTraceElement> clazz = trace[i].getClass();
+            if (thisClassName.equals(clazz.getName()))
                 break;
         }
 
@@ -125,7 +84,7 @@ public final class Util {
             throw new IllegalStateException("Failed to find org.slf4j.helpers.Util or its caller in the stack; " + "this should not happen");
         }
 
-        return trace[i + 2];
+        return trace[i + 2].getClass();
     }
 
     static final public void report(String msg, Throwable t) {
