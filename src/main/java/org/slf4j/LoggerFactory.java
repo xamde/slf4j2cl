@@ -118,7 +118,10 @@ public final class LoggerFactory {
         @GwtIncompatible
         @Override
         public void performInitialization() {
-            performInitialization();
+            bind();
+            if (INITIALIZATION_STATE == SUCCESSFUL_INITIALIZATION) {
+                versionSanityCheck();
+            }
         }
 
         @GwtIncompatible
@@ -165,10 +168,7 @@ public final class LoggerFactory {
 
     @GwtIncompatible
     private final static void performInitialization() {
-        bind();
-        if (INITIALIZATION_STATE == SUCCESSFUL_INITIALIZATION) {
-            versionSanityCheck();
-        }
+        VARY.performInitialization();
     }
 
     private static boolean messageContainsOrgSlf4jImplStaticLoggerBinder(String msg) {
