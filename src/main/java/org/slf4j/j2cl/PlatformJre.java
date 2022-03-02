@@ -43,7 +43,7 @@ class PlatformJre extends PlatformScript {
     @Override
     public <E> int drainQueueTo(Queue<E> queue, Collection<? super E> c, int maxElements) {
         if(queue instanceof LinkedBlockingQueue) {
-            LinkedBlockingQueue linkedBlockingQueue = (LinkedBlockingQueue) queue;
+            LinkedBlockingQueue<E> linkedBlockingQueue = (LinkedBlockingQueue<E>) queue;
             return linkedBlockingQueue.drainTo(c,maxElements);
         } else {
             return drainQueueTo_(queue, c, maxElements);
