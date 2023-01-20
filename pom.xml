@@ -5,18 +5,11 @@
 
     <groupId>de.xam.j2cl</groupId>
     <artifactId>slf4j2cl</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
     <name>slf4j2cl</name>
     <description>XamDe's Simple Logging Facade (slf) for j2cl (Java to Closure Compiler).</description>
-
-    <properties>
-        <slf4j.version>1.7.36</slf4j.version>
-        <j2cl-maven-plugin.version>0.19-SNAPSHOT</j2cl-maven-plugin.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elemental2.version>1.1.0</elemental2.version>
-    </properties>
+    <url>https://github.com/xamde/slf4j2cl</url>
 
     <licenses>
         <!-- slf4j is licensed as 'X11' according to the FAQ but the text is 1:1 the license text of MIT license -->
@@ -26,6 +19,33 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <developers>
+        <developer>
+            <name>Dr. Max Völkel</name>
+            <email>dev@xam.de</email>
+            <organization>IT Consulting Dr. Max Völkel</organization>
+            <organizationUrl>https://www.maxvoelkel.de</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/xamde/slf4j2cl.git</connection>
+        <developerConnection>scm:git:git://github.com/xamde/slf4j2cl.git</developerConnection>
+        <url>http://github.com/xamde/slf4j2cl/tree/main</url>
+    </scm>
+
+    <properties>
+        <slf4j.version>1.7.36</slf4j.version>
+        <j2cl-maven-plugin.version>0.19-SNAPSHOT</j2cl-maven-plugin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <plugin.javadoc.version>3.2.0</plugin.javadoc.version>
+        <plugin.sources.version>3.2.1</plugin.sources.version>
+        <elemental2.version>1.1.0</elemental2.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -121,6 +141,18 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <name>Central Repository OSSRH</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <pluginRepositories>
         <pluginRepository>
             <id>vertispan-releases</id>
@@ -144,7 +176,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
@@ -162,6 +194,7 @@
         </repository>
     </repositories>
 
+    <!--
     <distributionManagement>
         <repository>
             <id>github-slf4j2cl</id>
@@ -169,5 +202,49 @@
             <url>https://maven.pkg.github.com/xamde/slf4j2cl</url>
         </repository>
     </distributionManagement>
+    -->
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <configuration>
+                            <!-- Prevent gpg from using pinentry programs. Fixes: gpg: signing
+                                failed: Inappropriate ioctl for device -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

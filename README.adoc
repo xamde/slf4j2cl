@@ -8,7 +8,9 @@
 
 Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://github.com/google/j2cl[j2cl] compatible code. Especially in shared code, which can run on the client (as Javascript) and in the backend (as Java).
 
-== Process
+== Work Process
+
+How this library was created
 
 - Import sources of slf4j 1.7.36
 - Add custom `pom.xml` and this document to document the creation process
