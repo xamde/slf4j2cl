@@ -9,26 +9,26 @@ import elemental2.dom.DomGlobal;
  */
 public class Console_script {
 
-    private Console console = DomGlobal.console;
+    private final Console console = DomGlobal.console;
 
     public void debug(Object... var_data) {
         console.debug(var_data);
-    }
-
-    public void info(Object... var_data) {
-        console.info(var_data);
-    }
-
-    public void warn(Object... var_data) {
-        console.warn(var_data);
     }
 
     public void error(Object... var_data) {
         console.error(var_data);
     }
 
+    public void info(Object... var_data) {
+        console.info(var_data);
+    }
+
     public void trace(Object... var_data) {
         console.trace(var_data);
+    }
+
+    public void warn(Object... var_data) {
+        console.warn(var_data);
     }
 
 

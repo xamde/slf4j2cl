@@ -1,92 +1,32 @@
 package org.slf4j.event;
 
-import java.util.Queue;
-
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.helpers.SubstituteLogger;
 import org.slf4j.j2cl.Platform;
 
+import java.util.Queue;
+
 /**
- *
  * This class is used to record events during the initialization phase of the
  * underlying logging framework. It is called by {@link SubstituteLogger}.
  *
- *
  * @author Ceki G&uumllc&uuml;
  * @author Wessel van Norel
- *
  */
 public class EventRecodingLogger implements Logger {
 
+    // as an event recording logger we have no choice but to record all events
+    final static boolean RECORD_ALL_EVENTS = true;
     String name;
     SubstituteLogger logger;
     Queue<SubstituteLoggingEvent> eventQueue;
-
-    // as an event recording logger we have no choice but to record all events
-    final static boolean RECORD_ALL_EVENTS = true;
 
     public EventRecodingLogger(SubstituteLogger logger, Queue<SubstituteLoggingEvent> eventQueue) {
         this.logger = logger;
         this.name = logger.getName();
         this.eventQueue = eventQueue;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isTraceEnabled() {
-        return RECORD_ALL_EVENTS;
-    }
-
-    public void trace(String msg) {
-        recordEvent_0Args(Level.TRACE, null, msg, null);
-    }
-
-    public void trace(String format, Object arg) {
-        recordEvent_1Args(Level.TRACE, null, format, arg);
-    }
-
-    public void trace(String format, Object arg1, Object arg2) {
-        recordEvent2Args(Level.TRACE, null, format, arg1, arg2);
-    }
-
-    public void trace(String format, Object... arguments) {
-        recordEventArgArray(Level.TRACE, null, format, arguments);
-    }
-
-    public void trace(String msg, Throwable t) {
-        recordEvent_0Args(Level.TRACE, null, msg, t);
-    }
-
-    public boolean isTraceEnabled(Marker marker) {
-        return RECORD_ALL_EVENTS;
-    }
-
-    public void trace(Marker marker, String msg) {
-        recordEvent_0Args(Level.TRACE, marker, msg, null);
-    }
-
-    public void trace(Marker marker, String format, Object arg) {
-        recordEvent_1Args(Level.TRACE, marker, format, arg);
-    }
-
-    public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        recordEvent2Args(Level.TRACE, marker, format, arg1, arg2);
-    }
-
-    public void trace(Marker marker, String format, Object... argArray) {
-        recordEventArgArray(Level.TRACE, marker, format, argArray);
-    }
-
-    public void trace(Marker marker, String msg, Throwable t) {
-        recordEvent_0Args(Level.TRACE, marker, msg, t);
-    }
-
-    public boolean isDebugEnabled() {
-        return RECORD_ALL_EVENTS;
     }
 
     public void debug(String msg) {
@@ -109,10 +49,6 @@ public class EventRecodingLogger implements Logger {
         recordEvent_0Args(Level.DEBUG, null, msg, t);
     }
 
-    public boolean isDebugEnabled(Marker marker) {
-        return RECORD_ALL_EVENTS;
-    }
-
     public void debug(Marker marker, String msg) {
         recordEvent_0Args(Level.DEBUG, marker, msg, null);
     }
@@ -133,8 +69,48 @@ public class EventRecodingLogger implements Logger {
         recordEvent_0Args(Level.DEBUG, marker, msg, t);
     }
 
-    public boolean isInfoEnabled() {
-        return RECORD_ALL_EVENTS;
+    public void error(String msg) {
+        recordEvent_0Args(Level.ERROR, null, msg, null);
+    }
+
+    public void error(String format, Object arg) {
+        recordEvent_1Args(Level.ERROR, null, format, arg);
+    }
+
+    public void error(String format, Object arg1, Object arg2) {
+        recordEvent2Args(Level.ERROR, null, format, arg1, arg2);
+    }
+
+    public void error(String format, Object... arguments) {
+        recordEventArgArray(Level.ERROR, null, format, arguments);
+    }
+
+    public void error(String msg, Throwable t) {
+        recordEvent_0Args(Level.ERROR, null, msg, t);
+    }
+
+    public void error(Marker marker, String msg) {
+        recordEvent_0Args(Level.ERROR, marker, msg, null);
+    }
+
+    public void error(Marker marker, String format, Object arg) {
+        recordEvent_1Args(Level.ERROR, marker, format, arg);
+    }
+
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+        recordEvent2Args(Level.ERROR, marker, format, arg1, arg2);
+    }
+
+    public void error(Marker marker, String format, Object... arguments) {
+        recordEventArgArray(Level.ERROR, marker, format, arguments);
+    }
+
+    public void error(Marker marker, String msg, Throwable t) {
+        recordEvent_0Args(Level.ERROR, marker, msg, t);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void info(String msg) {
@@ -150,15 +126,11 @@ public class EventRecodingLogger implements Logger {
     }
 
     public void info(String format, Object... arguments) {
-        recordEventArgArray(Level.INFO, null, format,  arguments);
+        recordEventArgArray(Level.INFO, null, format, arguments);
     }
 
     public void info(String msg, Throwable t) {
         recordEvent_0Args(Level.INFO, null, msg, t);
-    }
-
-    public boolean isInfoEnabled(Marker marker) {
-        return RECORD_ALL_EVENTS;
     }
 
     public void info(Marker marker, String msg) {
@@ -182,8 +154,84 @@ public class EventRecodingLogger implements Logger {
 
     }
 
+    public boolean isDebugEnabled() {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isDebugEnabled(Marker marker) {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isErrorEnabled() {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isErrorEnabled(Marker marker) {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isInfoEnabled() {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isInfoEnabled(Marker marker) {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isTraceEnabled() {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isTraceEnabled(Marker marker) {
+        return RECORD_ALL_EVENTS;
+    }
+
     public boolean isWarnEnabled() {
         return RECORD_ALL_EVENTS;
+    }
+
+    public boolean isWarnEnabled(Marker marker) {
+        return RECORD_ALL_EVENTS;
+    }
+
+    public void trace(String msg) {
+        recordEvent_0Args(Level.TRACE, null, msg, null);
+    }
+
+    public void trace(String format, Object arg) {
+        recordEvent_1Args(Level.TRACE, null, format, arg);
+    }
+
+    public void trace(String format, Object arg1, Object arg2) {
+        recordEvent2Args(Level.TRACE, null, format, arg1, arg2);
+    }
+
+    public void trace(String format, Object... arguments) {
+        recordEventArgArray(Level.TRACE, null, format, arguments);
+    }
+
+    public void trace(String msg, Throwable t) {
+        recordEvent_0Args(Level.TRACE, null, msg, t);
+    }
+
+    public void trace(Marker marker, String msg) {
+        recordEvent_0Args(Level.TRACE, marker, msg, null);
+    }
+
+    public void trace(Marker marker, String format, Object arg) {
+        recordEvent_1Args(Level.TRACE, marker, format, arg);
+    }
+
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        recordEvent2Args(Level.TRACE, marker, format, arg1, arg2);
+    }
+
+    public void trace(Marker marker, String format, Object... argArray) {
+        recordEventArgArray(Level.TRACE, marker, format, argArray);
+    }
+
+    public void trace(Marker marker, String msg, Throwable t) {
+        recordEvent_0Args(Level.TRACE, marker, msg, t);
     }
 
     public void warn(String msg) {
@@ -206,10 +254,6 @@ public class EventRecodingLogger implements Logger {
         recordEvent_0Args(Level.WARN, null, msg, t);
     }
 
-    public boolean isWarnEnabled(Marker marker) {
-        return RECORD_ALL_EVENTS;
-    }
-
     public void warn(Marker marker, String msg) {
         recordEvent_0Args(Level.WARN, marker, msg, null);
     }
@@ -230,81 +274,6 @@ public class EventRecodingLogger implements Logger {
         recordEvent_0Args(Level.WARN, marker, msg, t);
     }
 
-    public boolean isErrorEnabled() {
-        return RECORD_ALL_EVENTS;
-    }
-
-    public void error(String msg) {
-        recordEvent_0Args(Level.ERROR, null, msg, null);
-    }
-
-    public void error(String format, Object arg) {
-        recordEvent_1Args(Level.ERROR, null, format, arg);
-    }
-
-    public void error(String format, Object arg1, Object arg2) {
-        recordEvent2Args(Level.ERROR, null, format, arg1, arg2);
-    }
-
-    public void error(String format, Object... arguments) {
-        recordEventArgArray(Level.ERROR, null, format, arguments);
-    }
-
-    public void error(String msg, Throwable t) {
-        recordEvent_0Args(Level.ERROR, null, msg, t);
-    }
-
-    public boolean isErrorEnabled(Marker marker) {
-        return RECORD_ALL_EVENTS;
-    }
-
-    public void error(Marker marker, String msg) {
-        recordEvent_0Args(Level.ERROR, marker, msg, null);
-    }
-
-    public void error(Marker marker, String format, Object arg) {
-        recordEvent_1Args(Level.ERROR, marker, format, arg);
-    }
-
-    public void error(Marker marker, String format, Object arg1, Object arg2) {
-        recordEvent2Args(Level.ERROR, marker, format, arg1, arg2);
-    }
-
-    public void error(Marker marker, String format, Object... arguments) {
-        recordEventArgArray(Level.ERROR, marker, format, arguments);
-    }
-
-    public void error(Marker marker, String msg, Throwable t) {
-        recordEvent_0Args(Level.ERROR, marker, msg, t);
-    }
-
-    private void recordEvent_0Args(Level level, Marker marker, String msg, Throwable t) {
-        recordEvent(level, marker, msg, null, t);
-    }
-
-    private void recordEvent_1Args(Level level, Marker marker, String msg, Object arg1) {
-        recordEvent(level, marker, msg, new Object[] { arg1 }, null);
-    }
-
-    private void recordEvent2Args(Level level, Marker marker, String msg, Object arg1, Object arg2) {
-        if (arg2 instanceof Throwable) {
-            recordEvent(level, marker, msg, new Object[] { arg1 }, (Throwable) arg2);
-        } else {
-            recordEvent(level, marker, msg, new Object[] { arg1, arg2 }, null);
-        }
-    }
-
-    private void recordEventArgArray(Level level, Marker marker, String msg, Object[] args) {
-        Throwable throwableCandidate = MessageFormatter.getThrowableCandidate(args);
-        if (throwableCandidate != null) {
-            Object[] trimmedCopy = MessageFormatter.trimmedCopy(args);
-            recordEvent(level, marker, msg, trimmedCopy, throwableCandidate);
-        } else {
-            recordEvent(level, marker, msg, args, null);
-        }
-    }
-
-
     // WARNING: this method assumes that any throwable is properly extracted
     private void recordEvent(Level level, Marker marker, String msg, Object[] args, Throwable throwable) {
         SubstituteLoggingEvent loggingEvent = new SubstituteLoggingEvent();
@@ -320,6 +289,32 @@ public class EventRecodingLogger implements Logger {
         loggingEvent.setThrowable(throwable);
 
         eventQueue.add(loggingEvent);
+    }
+
+    private void recordEvent2Args(Level level, Marker marker, String msg, Object arg1, Object arg2) {
+        if (arg2 instanceof Throwable) {
+            recordEvent(level, marker, msg, new Object[]{arg1}, (Throwable) arg2);
+        } else {
+            recordEvent(level, marker, msg, new Object[]{arg1, arg2}, null);
+        }
+    }
+
+    private void recordEventArgArray(Level level, Marker marker, String msg, Object[] args) {
+        Throwable throwableCandidate = MessageFormatter.getThrowableCandidate(args);
+        if (throwableCandidate != null) {
+            Object[] trimmedCopy = MessageFormatter.trimmedCopy(args);
+            recordEvent(level, marker, msg, trimmedCopy, throwableCandidate);
+        } else {
+            recordEvent(level, marker, msg, args, null);
+        }
+    }
+
+    private void recordEvent_0Args(Level level, Marker marker, String msg, Throwable t) {
+        recordEvent(level, marker, msg, null, t);
+    }
+
+    private void recordEvent_1Args(Level level, Marker marker, String msg, Object arg1) {
+        recordEvent(level, marker, msg, new Object[]{arg1}, null);
     }
 
 }

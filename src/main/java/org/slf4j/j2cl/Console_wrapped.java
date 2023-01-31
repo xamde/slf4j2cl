@@ -1,9 +1,5 @@
 package org.slf4j.j2cl;
 
-import elemental2.dom.Console;
-import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsType;
-
 import java.util.Arrays;
 
 /**
@@ -20,26 +16,26 @@ public class Console_wrapped extends Console_script {
 
     @Override
     @GwtIncompatible
-    public void info(Object... var_data) {
-        System.out.println("INFO " + Arrays.toString(var_data));
-    }
-
-    @Override
-    @GwtIncompatible
-    public void warn(Object... var_data) {
-        System.out.println("WARN " + Arrays.toString(var_data));
-    }
-
-    @Override
-    @GwtIncompatible
     public void error(Object... var_data) {
         System.out.println("ERROR " + Arrays.toString(var_data));
     }
 
     @Override
     @GwtIncompatible
+    public void info(Object... var_data) {
+        System.out.println("INFO " + Arrays.toString(var_data));
+    }
+
+    @Override
+    @GwtIncompatible
     public void trace(Object... var_data) {
         System.out.println("TRACE " + Arrays.toString(var_data));
+    }
+
+    @Override
+    @GwtIncompatible
+    public void warn(Object... var_data) {
+        System.out.println("WARN " + Arrays.toString(var_data));
     }
 
 

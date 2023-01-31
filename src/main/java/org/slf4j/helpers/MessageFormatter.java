@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
- *
+ * <p>
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -20,7 +20,6 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
  */
 package org.slf4j.helpers;
 
@@ -29,6 +28,7 @@ import java.util.Map;
 
 // contributors: lizongbo: proposed special treatment of array parameter values
 // Joern Huxhorn: pointed out double[] omission, suggested deep array copy
+
 /**
  * Formats messages according to very simple substitution rules. Substitutions
  * can be made 1, 2 or more arguments.
@@ -100,58 +100,7 @@ final public class MessageFormatter {
     static final String DELIM_STR = "{}";
     private static final char ESCAPE_CHAR = '\\';
 
-    /**
-     * Performs single argument substitution for the 'messagePattern' passed as
-     * parameter.
-     * <p>
-     * For example,
-     *
-     * <pre>
-     * MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;);
-     * </pre>
-     *
-     * will return the string "Hi there.".
-     * <p>
-     *
-     * @param messagePattern
-     *          The message pattern which will be parsed and formatted
-     * @param arg
-     *          The argument to be substituted in place of the formatting anchor
-     * @return The formatted message
-     */
-    final public static FormattingTuple format(String messagePattern, Object arg) {
-        return arrayFormat(messagePattern, new Object[] { arg });
-    }
-
-    /**
-     *
-     * Performs a two argument substitution for the 'messagePattern' passed as
-     * parameter.
-     * <p>
-     * For example,
-     *
-     * <pre>
-     * MessageFormatter.format(&quot;Hi {}. My name is {}.&quot;, &quot;Alice&quot;, &quot;Bob&quot;);
-     * </pre>
-     *
-     * will return the string "Hi Alice. My name is Bob.".
-     *
-     * @param messagePattern
-     *          The message pattern which will be parsed and formatted
-     * @param arg1
-     *          The argument to be substituted in place of the first formatting
-     *          anchor
-     * @param arg2
-     *          The argument to be substituted in place of the second formatting
-     *          anchor
-     * @return The formatted message
-     */
-    final public static FormattingTuple format(final String messagePattern, Object arg1, Object arg2) {
-        return arrayFormat(messagePattern, new Object[] { arg1, arg2 });
-    }
-
-
-    final public static FormattingTuple arrayFormat(final String messagePattern, final Object[] argArray) {
+    public static FormattingTuple arrayFormat(final String messagePattern, final Object[] argArray) {
         Throwable throwableCandidate = MessageFormatter.getThrowableCandidate(argArray);
         Object[] args = argArray;
         if (throwableCandidate != null) {
@@ -160,7 +109,7 @@ final public class MessageFormatter {
         return arrayFormat(messagePattern, args, throwableCandidate);
     }
 
-    final public static FormattingTuple arrayFormat(final String messagePattern, final Object[] argArray, Throwable throwable) {
+    public static FormattingTuple arrayFormat(final String messagePattern, final Object[] argArray, Throwable throwable) {
 
         if (messagePattern == null) {
             return new FormattingTuple(null, argArray, throwable);
@@ -217,25 +166,37 @@ final public class MessageFormatter {
         return new FormattingTuple(sbuf.toString(), argArray, throwable);
     }
 
-    final static boolean isEscapedDelimeter(String messagePattern, int delimeterStartIndex) {
-
-        if (delimeterStartIndex == 0) {
-            return false;
+    private static void booleanArrayAppend(StringBuilder sbuf, boolean[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
         }
-        char potentialEscape = messagePattern.charAt(delimeterStartIndex - 1);
-        if (potentialEscape == ESCAPE_CHAR) {
-            return true;
-        } else {
-            return false;
-        }
+        sbuf.append(']');
     }
 
-    final static boolean isDoubleEscaped(String messagePattern, int delimeterStartIndex) {
-        if (delimeterStartIndex >= 2 && messagePattern.charAt(delimeterStartIndex - 2) == ESCAPE_CHAR) {
-            return true;
-        } else {
-            return false;
+    private static void byteArrayAppend(StringBuilder sbuf, byte[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
         }
+        sbuf.append(']');
+    }
+
+    private static void charArrayAppend(StringBuilder sbuf, char[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
+        }
+        sbuf.append(']');
     }
 
     // special treatment of array values was suggested by 'lizongbo'
@@ -271,91 +232,7 @@ final public class MessageFormatter {
         }
     }
 
-    private static void safeObjectAppend(StringBuilder sbuf, Object o) {
-        try {
-            String oAsString = o.toString();
-            sbuf.append(oAsString);
-        } catch (Throwable t) {
-            Util.report("SLF4J: Failed toString() invocation on an object of type [" + o.getClass().getName() + "]", t);
-            sbuf.append("[FAILED toString()]");
-        }
-
-    }
-
-    private static void objectArrayAppend(StringBuilder sbuf, Object[] a, Map<Object[], Object> seenMap) {
-        sbuf.append('[');
-        if (!seenMap.containsKey(a)) {
-            seenMap.put(a, null);
-            final int len = a.length;
-            for (int i = 0; i < len; i++) {
-                deeplyAppendParameter(sbuf, a[i], seenMap);
-                if (i != len - 1)
-                    sbuf.append(", ");
-            }
-            // allow repeats in siblings
-            seenMap.remove(a);
-        } else {
-            sbuf.append("...");
-        }
-        sbuf.append(']');
-    }
-
-    private static void booleanArrayAppend(StringBuilder sbuf, boolean[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
-    }
-
-    private static void byteArrayAppend(StringBuilder sbuf, byte[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
-    }
-
-    private static void charArrayAppend(StringBuilder sbuf, char[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
-    }
-
-    private static void shortArrayAppend(StringBuilder sbuf, short[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
-    }
-
-    private static void intArrayAppend(StringBuilder sbuf, int[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
-    }
-
-    private static void longArrayAppend(StringBuilder sbuf, long[] a) {
+    private static void doubleArrayAppend(StringBuilder sbuf, double[] a) {
         sbuf.append('[');
         final int len = a.length;
         for (int i = 0; i < len; i++) {
@@ -377,15 +254,54 @@ final public class MessageFormatter {
         sbuf.append(']');
     }
 
-    private static void doubleArrayAppend(StringBuilder sbuf, double[] a) {
-        sbuf.append('[');
-        final int len = a.length;
-        for (int i = 0; i < len; i++) {
-            sbuf.append(a[i]);
-            if (i != len - 1)
-                sbuf.append(", ");
-        }
-        sbuf.append(']');
+    /**
+     * Performs single argument substitution for the 'messagePattern' passed as
+     * parameter.
+     * <p>
+     * For example,
+     *
+     * <pre>
+     * MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;);
+     * </pre>
+     *
+     * will return the string "Hi there.".
+     * <p>
+     *
+     * @param messagePattern
+     *          The message pattern which will be parsed and formatted
+     * @param arg
+     *          The argument to be substituted in place of the formatting anchor
+     * @return The formatted message
+     */
+    public static FormattingTuple format(String messagePattern, Object arg) {
+        return arrayFormat(messagePattern, new Object[]{arg});
+    }
+
+    /**
+     *
+     * Performs a two argument substitution for the 'messagePattern' passed as
+     * parameter.
+     * <p>
+     * For example,
+     *
+     * <pre>
+     * MessageFormatter.format(&quot;Hi {}. My name is {}.&quot;, &quot;Alice&quot;, &quot;Bob&quot;);
+     * </pre>
+     *
+     * will return the string "Hi Alice. My name is Bob.".
+     *
+     * @param messagePattern
+     *          The message pattern which will be parsed and formatted
+     * @param arg1
+     *          The argument to be substituted in place of the first formatting
+     *          anchor
+     * @param arg2
+     *          The argument to be substituted in place of the second formatting
+     *          anchor
+     * @return The formatted message
+     */
+    public static FormattingTuple format(final String messagePattern, Object arg1, Object arg2) {
+        return arrayFormat(messagePattern, new Object[]{arg1, arg2});
     }
 
     /**
@@ -407,6 +323,81 @@ final public class MessageFormatter {
         }
 
         return null;
+    }
+
+    private static void intArrayAppend(StringBuilder sbuf, int[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
+        }
+        sbuf.append(']');
+    }
+
+    static boolean isDoubleEscaped(String messagePattern, int delimeterStartIndex) {
+        return delimeterStartIndex >= 2 && messagePattern.charAt(delimeterStartIndex - 2) == ESCAPE_CHAR;
+    }
+
+    static boolean isEscapedDelimeter(String messagePattern, int delimeterStartIndex) {
+
+        if (delimeterStartIndex == 0) {
+            return false;
+        }
+        char potentialEscape = messagePattern.charAt(delimeterStartIndex - 1);
+        return potentialEscape == ESCAPE_CHAR;
+    }
+
+    private static void longArrayAppend(StringBuilder sbuf, long[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
+        }
+        sbuf.append(']');
+    }
+
+    private static void objectArrayAppend(StringBuilder sbuf, Object[] a, Map<Object[], Object> seenMap) {
+        sbuf.append('[');
+        if (!seenMap.containsKey(a)) {
+            seenMap.put(a, null);
+            final int len = a.length;
+            for (int i = 0; i < len; i++) {
+                deeplyAppendParameter(sbuf, a[i], seenMap);
+                if (i != len - 1)
+                    sbuf.append(", ");
+            }
+            // allow repeats in siblings
+            seenMap.remove(a);
+        } else {
+            sbuf.append("...");
+        }
+        sbuf.append(']');
+    }
+
+    private static void safeObjectAppend(StringBuilder sbuf, Object o) {
+        try {
+            String oAsString = o.toString();
+            sbuf.append(oAsString);
+        } catch (Throwable t) {
+            Util.report("SLF4J: Failed toString() invocation on an object of type [" + o.getClass().getName() + "]", t);
+            sbuf.append("[FAILED toString()]");
+        }
+
+    }
+
+    private static void shortArrayAppend(StringBuilder sbuf, short[] a) {
+        sbuf.append('[');
+        final int len = a.length;
+        for (int i = 0; i < len; i++) {
+            sbuf.append(a[i]);
+            if (i != len - 1)
+                sbuf.append(", ");
+        }
+        sbuf.append(']');
     }
 
     /**

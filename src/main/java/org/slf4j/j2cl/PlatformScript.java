@@ -8,43 +8,6 @@ import java.util.Queue;
 
 class PlatformScript {
 
-    public String getCurrentThreadName() {
-        return "n/a";
-    }
-
-    /**
-     * There are no threads in script mode, so this {@link ArrayList} is thread-safe enough
-     *
-     * @param <E>
-     * @return
-     */
-    public <E> List<E> createCopyOnWriteArrayList() {
-        return new ArrayList<E>();
-    }
-
-    public boolean isScript() {
-        return true;
-    }
-
-    public void runOnlyOnJre(Runnable runnable) {
-        // NO-OP
-    }
-
-    public void runOnlyInScript(Runnable runnable) {
-        runnable.run();
-    }
-
-
-    /**
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     * @throws IllegalArgumentException      {@inheritDoc}
-     */
-    public <E> int drainQueueTo(Queue<E> queue, Collection<? super E> c) {
-        return drainQueueTo(queue, c, Integer.MAX_VALUE);
-    }
-
     /**
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws ClassCastException            {@inheritDoc}
@@ -75,6 +38,34 @@ class PlatformScript {
     }
 
     /**
+     * There are no threads in script mode, so this {@link ArrayList} is thread-safe enough
+     *
+     * @param <E>
+     * @return
+     */
+    public <E> List<E> createCopyOnWriteArrayList() {
+        return new ArrayList<E>();
+    }
+
+    public ThreadLocal<Map<String, String>> createInheritableThreadLocal() {
+        return new ThreadLocal<>();
+    }
+
+    public <E> Queue<E> createLinkedBlockingQueue() {
+        return new SimpleFifoQueue<>();
+    }
+
+    /**
+     * @throws UnsupportedOperationException {@inheritDoc}
+     * @throws ClassCastException            {@inheritDoc}
+     * @throws NullPointerException          {@inheritDoc}
+     * @throws IllegalArgumentException      {@inheritDoc}
+     */
+    public <E> int drainQueueTo(Queue<E> queue, Collection<? super E> c) {
+        return drainQueueTo(queue, c, Integer.MAX_VALUE);
+    }
+
+    /**
      * @throws UnsupportedOperationException {@inheritDoc}
      * @throws ClassCastException            {@inheritDoc}
      * @throws NullPointerException          {@inheritDoc}
@@ -84,11 +75,19 @@ class PlatformScript {
         return drainQueueTo_(queue, c, maxElements);
     }
 
-    public <E> Queue<E> createLinkedBlockingQueue() {
-        return new SimpleFifoQueue<>();
+    public String getCurrentThreadName() {
+        return "n/a";
     }
 
-    public ThreadLocal<Map<String, String>> createInheritableThreadLocal() {
-        return new ThreadLocal<>();
+    public boolean isScript() {
+        return true;
+    }
+
+    public void runOnlyInScript(Runnable runnable) {
+        runnable.run();
+    }
+
+    public void runOnlyOnJre(Runnable runnable) {
+        // NO-OP
     }
 }

@@ -5,7 +5,7 @@ public class Platform extends PlatformJre {
     private static Platform INSTANCE;
 
     public static synchronized Platform get() {
-        if(INSTANCE==null)
+        if (INSTANCE == null)
             INSTANCE = new Platform();
         return INSTANCE;
     }

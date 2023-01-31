@@ -4,10 +4,12 @@ import java.util.AbstractQueue;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-/** FIFO ordered just like java.util.concurrent.LinkedBlockingQueue. Does not allow null elements */
+/**
+ * FIFO ordered just like java.util.concurrent.LinkedBlockingQueue. Does not allow null elements
+ */
 public class SimpleFifoQueue<E> extends AbstractQueue<E> {
 
-    private LinkedList<E> elements = new LinkedList<>();
+    private final LinkedList<E> elements = new LinkedList<>();
 
     @Override
     public Iterator<E> iterator() {
@@ -15,27 +17,27 @@ public class SimpleFifoQueue<E> extends AbstractQueue<E> {
     }
 
     @Override
-    public int size() {
-        return elements.size();
-    }
-
-    @Override
     public boolean offer(E e) {
-        elements.add( e);
+        elements.add(e);
         return true;
     }
 
     @Override
+    public E peek() {
+        if (size() == 0)
+            return null;
+        return elements.getFirst();
+    }
+
+    @Override
     public E poll() {
-        if(size() == 0)
+        if (size() == 0)
             return null;
         return elements.remove(0);
     }
 
     @Override
-    public E peek() {
-        if(size() == 0)
-            return null;
-        return elements.getFirst();
+    public int size() {
+        return elements.size();
     }
 }

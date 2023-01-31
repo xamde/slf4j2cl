@@ -10,7 +10,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
-@Retention(value=CLASS)
-@Target(value={TYPE,METHOD,CONSTRUCTOR,FIELD})
+@Retention(value = CLASS)
+@Target(value = {TYPE, METHOD, CONSTRUCTOR, FIELD})
 @Documented
-public @interface GwtIncompatible {}
+public @interface GwtIncompatible {
+}

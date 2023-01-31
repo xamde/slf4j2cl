@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
- *
+ * <p>
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -20,7 +20,6 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
  */
 package org.slf4j.helpers;
 
@@ -32,25 +31,24 @@ import java.util.List;
 
 /**
  * A simple implementation of the {@link Marker} interface.
- * 
+ *
  * @author Ceki G&uuml;lc&uuml;
  * @author Joern Huxhorn
  */
 public class BasicMarker implements Marker {
 
     private static final long serialVersionUID = -2849567615646933777L;
+    private static final String OPEN = "[ ";
+    private static final String CLOSE = " ]";
+    private static final String SEP = ", ";
     private final String name;
-    private List<Marker> referenceList = Platform.get().createCopyOnWriteArrayList();
+    private final List<Marker> referenceList = Platform.get().createCopyOnWriteArrayList();
 
     BasicMarker(String name) {
         if (name == null) {
             throw new IllegalArgumentException("A marker name cannot be null");
         }
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void add(Marker reference) {
@@ -60,35 +58,12 @@ public class BasicMarker implements Marker {
 
         // no point in adding the reference multiple times
         if (this.contains(reference)) {
-            return;
 
         } else if (reference.contains(this)) { // avoid recursion
             // a potential reference should not hold its future "parent" as a reference
-            return;
         } else {
             referenceList.add(reference);
         }
-    }
-
-    public boolean hasReferences() {
-        return (referenceList.size() > 0);
-    }
-
-    /**
-     * @deprecated by {@link #hasReferences()}
-     * @return
-     */
-    @Override
-    public boolean hasChildren() {
-        return hasReferences();
-    }
-
-    public Iterator<Marker> iterator() {
-      return referenceList.iterator();
-    }
-
-    public boolean remove(Marker referenceToRemove) {
-        return referenceList.remove(referenceToRemove);
     }
 
     public boolean contains(Marker other) {
@@ -132,10 +107,6 @@ public class BasicMarker implements Marker {
         return false;
     }
 
-    private static String OPEN = "[ ";
-    private static String CLOSE = " ]";
-    private static String SEP = ", ";
-
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -148,8 +119,34 @@ public class BasicMarker implements Marker {
         return name.equals(other.getName());
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @deprecated by {@link #hasReferences()}
+     * @return
+     */
+    @Override
+    @Deprecated
+    public boolean hasChildren() {
+        return hasReferences();
+    }
+
+    public boolean hasReferences() {
+        return (referenceList.size() > 0);
+    }
+
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public Iterator<Marker> iterator() {
+        return referenceList.iterator();
+    }
+
+    public boolean remove(Marker referenceToRemove) {
+        return referenceList.remove(referenceToRemove);
     }
 
     public String toString() {

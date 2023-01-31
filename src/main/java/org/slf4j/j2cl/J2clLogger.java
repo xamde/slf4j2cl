@@ -1,6 +1,5 @@
 package org.slf4j.j2cl;
 
-import elemental2.dom.Console;
 import org.slf4j.event.Level;
 import org.slf4j.helpers.MarkerIgnoringBase;
 
@@ -46,74 +45,6 @@ public class J2clLogger extends MarkerIgnoringBase {
         return slf4jFormat.replace("{}", "%s");
     }
 
-    /**
-     * true iff this log level is enabled when given threshold is active
-     */
-
-    @Override
-    public boolean isTraceEnabled() {
-        return isLevelEnabledAt(Level.TRACE,level);
-    }
-
-    /**
-     * NOTE: console.debug is not visible by default in the browser's JS console. It can be enabled by using the console's filter options 'Verbose'.
-     */
-    private boolean isLevelEnabledAt(Level level, Level threshold) {
-        return level.toInt() >= threshold.toInt();
-    }
-
-    @Override
-    public boolean isErrorEnabled() {
-        return isLevelEnabledAt(Level.ERROR,level);
-    }
-
-    @Override
-    public boolean isWarnEnabled() {
-        return isLevelEnabledAt(Level.WARN,level);
-    }
-
-    @Override
-    public boolean isDebugEnabled() {
-        return isLevelEnabledAt(Level.DEBUG,level);
-    }
-
-    @Override
-    public boolean isInfoEnabled() {
-        return isLevelEnabledAt(Level.INFO,level);
-    }
-
-    @Override
-    public void trace(String msg) {
-        if (!isTraceEnabled()) return;
-        console.debug("trace: " + msg);
-    }
-
-    @Override
-    public void trace(String format, Object arg) {
-        if (!isTraceEnabled()) return;
-        console.debug("trace: " + translate(format), arg);
-    }
-
-    @Override
-    public void trace(String format, Object arg1, Object arg2) {
-        if (!isTraceEnabled()) return;
-        console.debug("trace: " + translate(format), arg1, arg2);
-    }
-
-    @Override
-    public void trace(String format, Object... arguments) {
-        if (!isTraceEnabled()) return;
-        console.debug(Util.add("trace: " + translate(format), arguments));
-    }
-
-    @Override
-    public void trace(String msg, Throwable t) {
-        if (!isTraceEnabled()) return;
-        console.debug("trace: " + msg, t);
-        console.trace("client-side trace");
-    }
-
-
     @Override
     public void debug(String msg) {
         if (!isDebugEnabled()) return;
@@ -142,65 +73,6 @@ public class J2clLogger extends MarkerIgnoringBase {
     public void debug(String msg, Throwable t) {
         if (!isDebugEnabled()) return;
         console.debug(msg, t);
-        console.trace("client-side trace");
-    }
-
-
-    @Override
-    public void info(String msg) {
-        if (!isInfoEnabled()) return;
-        console.info(msg);
-    }
-
-    @Override
-    public void info(String format, Object arg) {
-        if (!isInfoEnabled()) return;
-        console.info(translate(format), arg);
-    }
-
-    @Override
-    public void info(String format, Object arg1, Object arg2) {
-        if (!isInfoEnabled()) return;
-        console.info(translate(format), arg1, arg2);
-    }
-
-    @Override
-    public void info(String format, Object... arguments) {
-        if (!isInfoEnabled()) return;
-        console.info(Util.add(translate(format), arguments));
-    }
-
-    @Override
-    public void info(String msg, Throwable t) {
-        if (!isInfoEnabled()) return;
-        console.info(msg, t);
-        console.trace("client-side trace");
-    }
-
-    @Override
-    public void warn(String msg) {
-        if (isWarnEnabled()) console.warn(msg);
-    }
-
-    @Override
-    public void warn(String format, Object arg) {
-        if (isWarnEnabled()) console.warn(translate(format), arg);
-    }
-
-    @Override
-    public void warn(String format, Object arg1, Object arg2) {
-        if (isWarnEnabled()) console.warn(translate(format), arg1, arg2);
-    }
-
-    @Override
-    public void warn(String format, Object... arguments) {
-        if (isWarnEnabled()) console.warn(Util.add(translate(format), arguments));
-    }
-
-    @Override
-    public void warn(String msg, Throwable t) {
-        if (!isWarnEnabled()) return;
-        console.warn(msg, t);
         console.trace("client-side trace");
     }
 
@@ -235,12 +107,137 @@ public class J2clLogger extends MarkerIgnoringBase {
         console.trace("client-side trace");
     }
 
+    public Level getLevel() {
+        return level;
+    }
+
+    @Override
+    public void info(String msg) {
+        if (!isInfoEnabled()) return;
+        console.info(msg);
+    }
+
+    @Override
+    public void info(String format, Object arg) {
+        if (!isInfoEnabled()) return;
+        console.info(translate(format), arg);
+    }
+
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (!isInfoEnabled()) return;
+        console.info(translate(format), arg1, arg2);
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        if (!isInfoEnabled()) return;
+        console.info(Util.add(translate(format), arguments));
+    }
+
+    @Override
+    public void info(String msg, Throwable t) {
+        if (!isInfoEnabled()) return;
+        console.info(msg, t);
+        console.trace("client-side trace");
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return isLevelEnabledAt(Level.DEBUG, level);
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
+        return isLevelEnabledAt(Level.ERROR, level);
+    }
+
+    @Override
+    public boolean isInfoEnabled() {
+        return isLevelEnabledAt(Level.INFO, level);
+    }
+
+    /**
+     * true iff this log level is enabled when given threshold is active
+     */
+
+    @Override
+    public boolean isTraceEnabled() {
+        return isLevelEnabledAt(Level.TRACE, level);
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return isLevelEnabledAt(Level.WARN, level);
+    }
+
     public void setLevel(Level level) {
         // if this level had been compiled out by using a NOPLogger, there should be a warning and no exception
         this.level = level;
     }
 
-    public Level getLevel() {
-        return level;
+    @Override
+    public void trace(String msg) {
+        if (!isTraceEnabled()) return;
+        console.debug("trace: " + msg);
+    }
+
+    @Override
+    public void trace(String format, Object arg) {
+        if (!isTraceEnabled()) return;
+        console.debug("trace: " + translate(format), arg);
+    }
+
+    @Override
+    public void trace(String format, Object arg1, Object arg2) {
+        if (!isTraceEnabled()) return;
+        console.debug("trace: " + translate(format), arg1, arg2);
+    }
+
+    @Override
+    public void trace(String format, Object... arguments) {
+        if (!isTraceEnabled()) return;
+        console.debug(Util.add("trace: " + translate(format), arguments));
+    }
+
+    @Override
+    public void trace(String msg, Throwable t) {
+        if (!isTraceEnabled()) return;
+        console.debug("trace: " + msg, t);
+        console.trace("client-side trace");
+    }
+
+    @Override
+    public void warn(String msg) {
+        if (isWarnEnabled()) console.warn(msg);
+    }
+
+    @Override
+    public void warn(String format, Object arg) {
+        if (isWarnEnabled()) console.warn(translate(format), arg);
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) console.warn(translate(format), arg1, arg2);
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        if (isWarnEnabled()) console.warn(Util.add(translate(format), arguments));
+    }
+
+    @Override
+    public void warn(String msg, Throwable t) {
+        if (!isWarnEnabled()) return;
+        console.warn(msg, t);
+        console.trace("client-side trace");
+    }
+
+    /**
+     * NOTE: console.debug is not visible by default in the browser's JS console. It can be enabled by using the console's filter options 'Verbose'.
+     */
+    private boolean isLevelEnabledAt(Level level, Level threshold) {
+        return level.toInt() >= threshold.toInt();
     }
 }
