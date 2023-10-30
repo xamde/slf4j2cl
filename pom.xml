@@ -5,7 +5,7 @@
 
     <groupId>de.xam.j2cl</groupId>
     <artifactId>slf4j2cl</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <packaging>jar</packaging>
     <name>slf4j2cl</name>
     <description>XamDe's Simple Logging Facade (slf) for j2cl (Java to Closure Compiler).</description>
