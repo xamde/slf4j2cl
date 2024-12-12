@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 
 /**
- * An <b>optional</b> interface helping integration with logging systems capable of 
- * extracting location information. This interface is mainly used by SLF4J bridges 
+ * An <b>optional</b> interface helping integration with logging systems capable of
+ * extracting location information. This interface is mainly used by SLF4J bridges
  * such as jcl-over-slf4j, jul-to-slf4j and log4j-over-slf4j or {@link Logger} wrappers
  * which need to provide hints so that the underlying logging system can extract
  * the correct location information (method name, line number).
@@ -40,14 +40,14 @@ public interface LocationAwareLogger extends Logger {
 
     // these constants should be in EventContants. However, in order to preserve binary backward compatibility
     // we keep these constants here
-    int TRACE_INT = 00;
+    int TRACE_INT = 0;
     int DEBUG_INT = 10;
     int INFO_INT = 20;
     int WARN_INT = 30;
     int ERROR_INT = 40;
 
     /**
-     * Printing method with support for location information. 
+     * Printing method with support for location information.
      *
      * @param marker The marker to be used for this event, may be null.
      * @param fqcn The fully qualified class name of the <b>logger instance</b>,
