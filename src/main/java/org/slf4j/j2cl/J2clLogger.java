@@ -28,7 +28,7 @@ import org.slf4j.helpers.MarkerIgnoringBase;
  */
 public class J2clLogger extends MarkerIgnoringBase {
 
-    private final Console_wrapped console = new Console_wrapped();
+    private transient final Console_wrapped console = new Console_wrapped();
     private Level level;
 
     public J2clLogger(Level level) {
