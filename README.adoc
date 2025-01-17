@@ -6,9 +6,14 @@
 
 **s**imple **l**ogging **f**acade **f**or **j**ava **t**o **c**losure **c**ompiler
 
-Provide the familar https://www.slf4j.org/[slf4j] API and use it in https://github.com/google/j2cl[j2cl] compatible code. Especially in shared code, which can run on the client (as Javascript) and in the backend (as Java).
+.Goal
+Provide the familiar https://www.slf4j.org/[slf4j] API and use it in https://github.com/google/j2cl[j2cl] compatible code. Especially in shared code, which can run on the client (as Javascript) and in the backend (as Java).
 
-== Work Process
+.Status
+This lib is a drop-in replacement for slf4j. Even package names are kept the same (based on slf4j **1.7.36**).
+
+
+== The Making Of
 
 How this library was created
 
